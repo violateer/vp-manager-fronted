@@ -1,0 +1,14 @@
+.wrapper {
+    height: 100%;
+
+    .layout {
+        height: 100%;
+
+        &_sider {
+        }
+
+        &_right {
+            padding: 0 10px;
+        }
+    }
+}

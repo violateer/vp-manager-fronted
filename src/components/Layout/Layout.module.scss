@@ -1,0 +1,25 @@
+.wrapper {
+    border-bottom: 1px solid var(--border-color);
+    padding: 10px;
+    display: flex;
+
+    .icon {
+        background-color: lightgreen;
+        width: 240px;
+        height: var(--bar-icon-height);
+        display: inline-block;
+    }
+
+    .right_bar {
+        display: flex;
+        width: calc(100% - 260px);
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.content {
+    width: calc(100% - 20px);
+    height: calc(100vh - var(--bar-icon-height) - 41px);
+    padding: 10px;
+}
