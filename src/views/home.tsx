@@ -1,14 +1,7 @@
 import { Layout } from '@/components/Layout/Layout'
-import { Component, defineComponent, h, ref } from 'vue'
-import { NIcon, useLoadingBar } from 'naive-ui'
+import { defineComponent } from 'vue'
 import s from "./home.module.scss"
-import type { MenuOption } from 'naive-ui'
 import { TreeOption } from 'naive-ui'
-import {
-    FishOutline as FishIcon,
-    PawOutline as PawIcon,
-    BagOutline as BagOutlineIcon
-} from '@vicons/ionicons5'
 import { repeat } from 'seemly'
 import { Table } from '@/components/Table/Table'
 
