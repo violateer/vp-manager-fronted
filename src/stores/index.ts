@@ -1,3 +1,4 @@
+import { http } from '@/http'
 import { defineStore } from 'pinia'
 
 // 你可以对 `defineStore()` 的返回值进行任意命名，但最好使用 store 的名字，同时以 `use` 开头且以 `Store` 结尾。(比如 `useUserStore`，`useCartStore`，`useProductStore`)
@@ -10,6 +11,20 @@ export const useTestStore = defineStore('test', {
     actions: {
         increment() {
             this.count++
+        },
+    },
+})
+
+export const useUserStore = defineStore('user', {
+    state: () => {
+        return {
+            session: null as SessionResource
+        }
+    },
+    actions: {
+        async initSession() {
+            const res = await http.get<{ resource: SessionResource }>('/me')
+            this.session = res.data.resource;
         },
     },
 })

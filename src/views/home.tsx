@@ -4,6 +4,7 @@ import s from "./home.module.scss"
 import { TreeOption } from 'naive-ui'
 import { repeat } from 'seemly'
 import { Table } from '@/components/Table/Table'
+import { useUserStore } from '@/stores'
 
 
 function createData(level = 4, baseKey = ''): TreeOption[] | undefined {
@@ -28,6 +29,7 @@ function createLabel(level: number): string {
 
 export default defineComponent({
     setup(props, ctx) {
+        const userStore = useUserStore()
         const data = createData();
         const nodeProps = ({ option }: { option: TreeOption }) => {
             return {
@@ -36,6 +38,9 @@ export default defineComponent({
                 }
             }
         }
+
+        console.log(userStore.session);
+
 
         return () => <Layout>
             {{

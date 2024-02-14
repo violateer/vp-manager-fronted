@@ -30,3 +30,13 @@ type Resource<T> = {
 type ResourceError = {
     errors: Record<string, string[]>;
 };
+
+type SessionResource = {
+    active_project_id: number;
+    active_project_name: string;
+    email: string;
+    id: number;
+    name: string;
+    avatar?: string;
+    phone?: string;
+}
