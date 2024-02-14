@@ -1,10 +1,15 @@
 import { defineComponent, ref } from 'vue'
 import s from "./loginAndRegister.module.scss"
 import logo from "@/assets/logo.svg"
-import { FormInst, FormItemRule } from 'naive-ui';
+import { FormInst, FormItemRule, useMessage } from 'naive-ui';
+import { http } from '@/http';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
     setup(props, ctx) {
+        const router = useRouter();
+        const message = useMessage()
+        
         // 邮箱正则
         const emailRegxp = /^\w+(-+.\w+)*@\w+(-.\w+)*.\w+(-.\w+)*$/;
         // 密码正则
@@ -102,9 +107,12 @@ export default defineComponent({
         // 登录
         const login = (e) => {
             e.preventDefault()
-            loginFormRef.value?.validate((errors) => {
+            loginFormRef.value?.validate(async (errors) => {
               if (!errors) {
-                console.log(loginFormValue.value)
+                  const res = await http.post<{ token: string }>("/login", loginFormValue.value)
+                  message.success("登录成功！")
+                  localStorage.setItem('token', res.data.token)
+                  router.push("/")
               } 
             })
         }
@@ -112,9 +120,12 @@ export default defineComponent({
         // 注册
         const register = (e) => {
             e.preventDefault()
-            registerFormRef.value?.validate((errors) => {
+            registerFormRef.value?.validate(async (errors) => {
               if (!errors) {
-                console.log(registerFormValue.value)
+                const res = await http.post<{ token: string }>("/register", registerFormValue.value)
+                message.success("注册成功！")
+                localStorage.setItem('token', res.data.token)
+                router.push("/")
               } 
             })
         }

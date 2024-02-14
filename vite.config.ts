@@ -7,7 +7,12 @@ import vueJsx from "@vitejs/plugin-vue-jsx";
 export default defineConfig({
     plugins: [vue(), vueJsx()],
     server: {
-        port: 5200
+        port: 5200,
+        proxy: {
+            "/api/v1": {
+                target: "http://localhost:3000/",
+            },
+        },
     },
     resolve: {
         alias: {
