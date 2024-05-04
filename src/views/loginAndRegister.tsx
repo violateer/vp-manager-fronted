@@ -4,7 +4,6 @@ import logo from '@/assets/logo.svg'
 import { FormInst, FormItemRule, useMessage } from 'naive-ui'
 import { http } from '@/http'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores'
 
 export default defineComponent({
   setup(props, ctx) {
@@ -131,8 +130,8 @@ export default defineComponent({
     }
 
     const navigateToHome = async () => {
-      const userStore = useUserStore()
-      await userStore.initSession()
+      const res = await http.get<{ resource: SessionResource }>('/me')
+      localStorage.setItem('user', JSON.stringify(res.data.resource))
 
       router.push('/')
     }
