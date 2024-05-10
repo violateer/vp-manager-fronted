@@ -14,3 +14,17 @@ export const useTestStore = defineStore('test', {
     }
   }
 })
+
+export const useUserStore = defineStore('user', {
+  state: () => {
+      return {
+          session: null as SessionResource
+      }
+  },
+  actions: {
+      async initSession() {
+          const res = await http.get<{ resource: SessionResource }>('/me')
+          this.session = res.data.resource;
+      },
+  },
+})

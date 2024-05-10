@@ -63,13 +63,10 @@ http.instance.interceptors.request.use((config) => {
 
 http.instance.interceptors.response.use(
   (response) => {
-    console.log(1, response)
-
     loadingBar.finish()
     return response
   },
   (error) => {
-    console.log(2, error)
     loadingBar.finish()
     if (error.response.data.message) {
       message.error(error.response.data.message)

@@ -1,0 +1,24 @@
+.wrapper {
+  .action {
+    width: 100%;
+    padding: 4px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &_input {
+      width: 76%;
+    }
+
+    &_button {
+      display: flex;
+    }
+  }
+}
+
+:global {
+  .n-tree .n-tree-node {
+    padding: 5px 0;
+  }
+}
