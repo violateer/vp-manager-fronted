@@ -33,3 +33,13 @@ type SessionResource = {
   avatar?: string
   phone?: string
 }
+
+type ProjectResource = {
+  id: number,
+  name: string,
+  manager_user_id:number,
+  created_at: string,
+  updated_at: string,
+  parent_id?: number,
+  children?: ProjectResource[]
+}

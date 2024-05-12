@@ -22,4 +22,10 @@
   .n-tree .n-tree-node {
     padding: 3px 0;
   }
+
+  .n-tree .n-tree-node.n-tree-node--highlight .n-tree-node-content .n-tree-node-content__text {
+    background-color: var(--project-hilight-color);
+    border: unset;
+    padding: 3px 0 3px 3px;
+  }
 }

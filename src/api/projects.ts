@@ -5,4 +5,11 @@ const getProjectTree = async () => {
   return res.data.resource
 }
 
-export { getProjectTree }
+const switchProject = async (id: number) => {
+  const res = await http.get<Resource>('/me/switch_project?project_id=' + id)
+  if (res.status == 200) {
+    window.location.reload()
+  }
+}
+
+export { getProjectTree, switchProject }
