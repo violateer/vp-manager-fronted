@@ -1,34 +1,15 @@
-import { Component, defineComponent, h, ref } from 'vue'
-import { NIcon } from 'naive-ui'
-import type { MenuOption } from 'naive-ui'
-import { BookOutline as BookIcon } from '@vicons/ionicons5'
+import { defineComponent } from 'vue'
 import s from './Layout.module.scss'
-import { ProjectViewer } from '../ProjectViewer/ProjectViewer'
 import { ProjectSelection } from '../ProjectViewer/ProjectSelection'
 
 export const Layout = defineComponent({
   setup(props, ctx) {
-    const activeKey = ref<string | null>('1')
-
-    const renderIcon = (icon: Component) => {
-      return () => h(NIcon, null, { default: () => h(icon) })
-    }
-
-    const menuOptions: MenuOption[] = [
-      {
-        label: '文件管理',
-        key: '1',
-        icon: renderIcon(BookIcon)
-      }
-    ]
-
     return () => (
       <>
         <div class={s.wrapper}>
           <div class={s.icon}></div>
           <div class={s.right_bar}>
             <div class={s.menu}>
-              {/* <n-menu value={activeKey.value} mode="horizontal" options={menuOptions} responsive /> */}
               <ProjectSelection />
             </div>
             <n-avatar

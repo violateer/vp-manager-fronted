@@ -35,11 +35,28 @@ type SessionResource = {
 }
 
 type ProjectResource = {
-  id: number,
-  name: string,
-  manager_user_id:number,
-  created_at: string,
-  updated_at: string,
-  parent_id?: number,
+  id: number
+  name: string
+  manager_user_id: number
+  created_at: string
+  updated_at: string
+  parent_id?: number
   children?: ProjectResource[]
 }
+
+type MenuResource = {
+  id: number
+  name: string
+  level: number
+  created_at: string
+  updated_at: string
+  sequ: number
+  parent_id?: number
+  icon?: string
+  component?: string
+  route?: string
+  route_type?: string
+  children?: MenuResource[]
+}
+
+type MenuResources = MenuResource[]

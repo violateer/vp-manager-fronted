@@ -1,25 +1,32 @@
 import { useUserStore } from '@/stores'
-import { nextTick } from 'process'
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 
 // 路由配置 和以前一样
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/home'
+    name: 'home',
+    meta: {
+      type: 'home'
+    },
+    component: () => import('@/views/home'),
+    children: [
+      {
+        path: '/personal',
+        name: 'personal',
+        component: () => import('@/views/personal')
+      },
+      {
+        path: 'menu',
+        name: 'menu',
+        component: () => import('@/pages/MenuPage')
+      }
+    ]
   },
   {
     path: '/auth',
     name: 'auth',
     component: () => import('@/views/loginAndRegister')
-  },
-  {
-    path: '/home',
-    name: 'home',
-    meta: {
-      type: 'home'
-    },
-    component: () => import('@/views/home')
   },
   {
     path: '/:pathMatch(.*)*', // 注意此处 404页面匹配规则和以前不相同，得采用这种配置方式才行
@@ -43,6 +50,22 @@ router.beforeEach((to, from) => {
     // 将用户重定向到登录页面
     return { name: 'auth' }
   }
+
+  if (to.fullPath === '/') {
+    const vp_manager_last_route = localStorage.getItem('vp_manager_last_route')
+    if (
+      !vp_manager_last_route ||
+      vp_manager_last_route === '/' ||
+      vp_manager_last_route === '/auth'
+    ) {
+      return { name: 'personal' }
+    }
+  }
+})
+
+// 后置守卫
+router.afterEach((_, from) => {
+  localStorage.setItem('vp_manager_last_route', from.fullPath)
 })
 
 export default router
