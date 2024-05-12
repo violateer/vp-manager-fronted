@@ -2,7 +2,7 @@ import { PropType, defineComponent, ref } from 'vue'
 import s from './ProjectSelection.module.scss'
 import { getProjectTree, switchProject } from '@/api/projects'
 import { useUserStore } from '@/stores'
-import { treeGetClickTarget } from 'naive-ui/es/tree'
+import { TreeOverrideNodeClickBehavior, treeGetClickTarget } from 'naive-ui/es/tree'
 
 export const ProjectSelection = defineComponent({
   props: {
@@ -13,7 +13,6 @@ export const ProjectSelection = defineComponent({
   async setup(props, context) {
     const projects = await getProjectTree()
     const project_search = ref('')
-    const currentProj = ref<ProjectResource>(projects[0])
     const userStore = useUserStore()
 
     const nodeProps = ({ option }: { option: ProjectResource }) => {
@@ -21,14 +20,16 @@ export const ProjectSelection = defineComponent({
         onClick(e) {
           if (treeGetClickTarget(e) === 'node') {
             switchProject(option.id)
-            currentProj.value = option
           }
         }
       }
     }
 
-    const projectFilter = (pattern: string, node: ProjectResource) => {
-      console.log(pattern, node)
+    const override: TreeOverrideNodeClickBehavior = ({ option }) => {
+      if (option.children) {
+        return 'toggleSelect'
+      }
+      return 'default'
     }
 
     const options = [
@@ -58,7 +59,7 @@ export const ProjectSelection = defineComponent({
               cancelable={false}
               expand-on-click={true}
               node-props={nodeProps}
-              // filter={projectFilter}
+              override-default-node-click-behavior={override}
               showIrrelevantNodes={false}
               class={s.tree_node}
             />
