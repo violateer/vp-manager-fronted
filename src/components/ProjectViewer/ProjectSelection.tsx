@@ -76,11 +76,49 @@ export const ProjectSelection = defineComponent({
       })
     }
 
+    const options = [
+      {
+        key: 'header',
+        type: 'render',
+        render: () => (
+          <div class={s.project_tree}>
+            <n-tree
+            block-line
+            data={projects}
+            key-field="id"
+            label-field="name"
+            children-field="children"
+            selectable
+            show-line={true}
+            accordion={true}
+            expand-on-click={true}
+            node-props={nodeProps}
+            class={s.tree_node}
+          />
+          </div>
+        )
+      }
+    ]
+
+    const handleSelect = (key: string | number) => {
+      console.log(String(key))
+    }
+
     console.log('session:', userStore.session)
 
     return () => (
       <div class={s.wrapper}>
-        <div class={s.project_bar}>{userStore.session.active_project_name}</div>
+        <n-dropdown
+          trigger="click"
+          placement="bottom-start"
+          showArrow={true}
+          options={options}
+          onSelect={handleSelect}
+        >
+          <div class={s.project_box}>
+            <div class={s.project_box_bar}>{userStore.session.active_project_name}</div>
+          </div>
+        </n-dropdown>
         {/* <div class={s.action}>
           <div class={s.action_input}>
             <n-input type="text" placeholder="请输入项目名称..." />

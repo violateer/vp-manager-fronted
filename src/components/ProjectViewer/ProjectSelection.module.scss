@@ -1,6 +1,25 @@
 .wrapper {
-  padding: 5px 10px;
-  .project_bar {
-    color: blue;
+  .project_box {
+    padding: 5px 10px;
+    margin: 0 4px;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    cursor: pointer;
+
+    &_bar {
+      color: var(--project-color);
+    }
+  }
+}
+
+.project_tree {
+  padding: 4px 8px;
+  min-width: 200px;
+  max-width: 400px;
+}
+
+:global {
+  .n-tree .n-tree-node {
+    padding: 3px 0;
   }
 }
