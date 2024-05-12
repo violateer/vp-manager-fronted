@@ -9,7 +9,6 @@ import '@/assets/var.scss'
 const pinia = createPinia()
 const app = createApp(App)
 app.use(router)
-generateRouter(router)
 app.use(pinia)
 app.use(naive)
 app.mount('#app')

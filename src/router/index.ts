@@ -1,5 +1,6 @@
 import { useUserStore } from '@/stores'
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
+import { generateRouter } from './generator'
 
 // 路由配置 和以前一样
 const routes: RouteRecordRaw[] = [
@@ -12,14 +13,9 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/home'),
     children: [
       {
-        path: '/personal',
+        path: 'personal',
         name: 'personal',
         component: () => import('@/views/personal')
-      },
-      {
-        path: 'menu',
-        name: 'menu',
-        component: () => import('@/pages/MenuPage')
       }
     ]
   },
@@ -42,7 +38,7 @@ const router = createRouter({
 })
 
 // 全局路由守卫
-router.beforeEach((to, from) => {
+router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
   userStore.initSession()
   const token = localStorage.getItem('token')
@@ -50,6 +46,15 @@ router.beforeEach((to, from) => {
     // 将用户重定向到登录页面
     return { name: 'auth' }
   }
+
+  // generateRouter(router)
+
+  // const redirectPath = (from.query.redirect || to.path) as string
+  // const redirect = decodeURIComponent(redirectPath)
+  // console.log(to.path, '123123', redirect)
+
+  // const nextData = to.path === redirect ? { ...to, replace: true } : { path: redirect }
+  // next(nextData)
 
   if (to.fullPath === '/') {
     const vp_manager_last_route = localStorage.getItem('vp_manager_last_route')
