@@ -55,6 +55,7 @@ export const Menu = defineComponent({
           label-field="name"
           options={menuOptions.value}
           accordion
+          inverted={'inverted'}
         />
       </div>
     )

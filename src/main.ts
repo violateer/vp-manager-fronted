@@ -1,10 +1,10 @@
 import { createApp } from 'vue'
-import '@/assets/var.scss'
 import router from '@/router'
 import { createPinia } from 'pinia'
 import naive from 'naive-ui'
 import App from './App'
 import { generateRouter } from './router/generator'
+import '@/assets/var.scss'
 
 const pinia = createPinia()
 const app = createApp(App)

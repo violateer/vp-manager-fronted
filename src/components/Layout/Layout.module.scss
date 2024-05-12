@@ -1,20 +1,38 @@
 .wrapper {
-  border-bottom: 1px solid var(--border-color);
-  padding: 10px;
   display: flex;
 
   .icon {
-    background-color: lightgreen;
     width: 240px;
     height: var(--bar-icon-height);
     display: inline-block;
+    box-sizing: border-box;
+    padding: 8px;
+  }
+
+  .left_bar {
+    height: 100vh;
+    background-color: #001428;
   }
 
   .right_bar {
-    display: flex;
-    width: calc(100% - 260px);
-    align-items: center;
-    justify-content: space-between;
+    width: 100%;
+    height: 100vh;
+
+    &_top {
+      height: var(--topbar-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+
+      .menu {
+        width: 200px;
+      }
+    }
+
+    &_bottom {
+      padding: 10px;
+    }
   }
 }
 

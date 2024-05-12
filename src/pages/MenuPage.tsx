@@ -8,6 +8,12 @@ export default defineComponent({
     }
   },
   setup(props, context) {
-    return () => <div class={s.wrapper}>菜单管理</div>
+    return () => (
+      <div class={s.wrapper}>
+        <n-layout embedded content-style="padding: 24px;">
+          <n-card>只要是 看到天边云一朵 逐天拢有好心情</n-card>
+        </n-layout>
+      </div>
+    )
   }
 })
