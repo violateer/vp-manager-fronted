@@ -1,6 +1,6 @@
 import { useUserStore } from '@/stores'
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
-import { generateRouter } from './generator'
+import { useAsyncRouteStore } from '@/stores/asyncRoutes'
 
 // 路由配置 和以前一样
 const routes: RouteRecordRaw[] = [
@@ -38,34 +38,34 @@ const router = createRouter({
 })
 
 // 全局路由守卫
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
+  const asyncRouteStore = useAsyncRouteStore()
   const userStore = useUserStore()
-  userStore.initSession()
   const token = localStorage.getItem('token')
-  if (!token && to.name !== 'auth') {
-    // 将用户重定向到登录页面
-    return { name: 'auth' }
+
+  if (to.name == 'auth') {
+    next()
+    return
   }
 
-  // generateRouter(router)
-
-  // const redirectPath = (from.query.redirect || to.path) as string
-  // const redirect = decodeURIComponent(redirectPath)
-  // console.log(to.path, '123123', redirect)
-
-  // const nextData = to.path === redirect ? { ...to, replace: true } : { path: redirect }
-  // next(nextData)
-
-  if (to.fullPath === '/') {
-    const vp_manager_last_route = localStorage.getItem('vp_manager_last_route')
-    if (
-      !vp_manager_last_route ||
-      vp_manager_last_route === '/' ||
-      vp_manager_last_route === '/auth'
-    ) {
-      return { name: 'personal' }
-    }
+  if (!token) {
+    next('/auth')
+    return
   }
+
+  await userStore.initSession()
+
+  console.log(asyncRouteStore.getIsDynamicRouteAdded, 'ss')
+
+  if (asyncRouteStore.getIsDynamicRouteAdded) {
+    next()
+    return
+  }
+
+  await asyncRouteStore.generateRouter(router)
+    asyncRouteStore.setDynamicRouteAdded(true)
+
+  next(to.path)
 })
 
 // 后置守卫
