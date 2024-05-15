@@ -1,2 +1,7 @@
 .wrapper {
+  height: calc(100% - var(--topbar-height));
+  padding: 24px;
+
+  .grid {
+  }
 }
