@@ -38,7 +38,7 @@ const router = createRouter({
 })
 
 // 全局路由守卫
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const asyncRouteStore = useAsyncRouteStore()
   const userStore = useUserStore()
   const token = localStorage.getItem('token')
@@ -55,15 +55,13 @@ router.beforeEach(async (to, from, next) => {
 
   await userStore.initSession()
 
-  console.log(asyncRouteStore.getIsDynamicRouteAdded, 'ss')
-
   if (asyncRouteStore.getIsDynamicRouteAdded) {
     next()
     return
   }
 
   await asyncRouteStore.generateRouter(router)
-    asyncRouteStore.setDynamicRouteAdded(true)
+  asyncRouteStore.setDynamicRouteAdded(true)
 
   next(to.path)
 })

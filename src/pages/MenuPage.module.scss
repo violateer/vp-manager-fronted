@@ -1,7 +1,22 @@
 .wrapper {
-  height: calc(100% - var(--topbar-height));
+  height: calc(100% + 4px - var(--topbar-height));
   padding: 24px;
 
   .grid {
+    height: 100%;
+
+    &_item {
+      overflow: hidden;
+    }
+  }
+
+  .card {
+    height: 100%;
+  }
+}
+
+:global {
+  .n-card-header {
+    height: 60px;
   }
 }

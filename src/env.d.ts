@@ -51,6 +51,7 @@ type MenuResource = {
   created_at: string
   updated_at: string
   sequ: number
+  is_system: number
   parent_id?: number
   icon?: string
   component?: string

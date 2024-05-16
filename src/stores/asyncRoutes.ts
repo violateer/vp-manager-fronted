@@ -43,7 +43,7 @@ export const useAsyncRouteStore = defineStore('asyncRoute', {
         data: { resource: list }
       } = await http.get<{ resource: MenuResources }>('/menus/list')
 
-      const modules = import.meta.glob('../pages/**.tsx', { eager: true })
+      const modules = await import.meta.glob('../pages/**.tsx', { eager: true })
 
       const homeRoute = router.getRoutes().find((v) => v.name === 'home')
 
@@ -53,15 +53,13 @@ export const useAsyncRouteStore = defineStore('asyncRoute', {
           const route = {
             path: v.route,
             name: v.route,
-            component: () => modules[`../pages/${v.component}.tsx`]
+            component: () => Promise.resolve(modules[`../pages/${v.component}.tsx`])
           }
 
           homeRoute?.children?.push(route)
         })
 
       router.addRoute(homeRoute)
-
-      console.log(router.getRoutes())
     }
   }
 })
