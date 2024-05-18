@@ -1,8 +1,10 @@
-import { computed, defineComponent, ref } from 'vue'
+import { defineComponent, ref } from 'vue'
 import s from './MenuPage.module.scss'
 import { useMenuStore } from '@/stores'
 import { OnUpdateSelectedKeys } from 'naive-ui/es/tree/src/Tree'
-import { FormInst, FormItemRule, TreeOption } from 'naive-ui'
+import { TreeOption, FormInst, useMessage } from 'naive-ui'
+import { SelfLoadingButton } from '@/components/Button/CustomButton'
+import { addMenu } from '@/api/menus'
 
 export default defineComponent({
   displayName: 'MenuPage',
@@ -13,11 +15,15 @@ export default defineComponent({
       deleteMenu: false
     })
 
+    const message = useMessage()
+
     const menuStore = useMenuStore()
     await menuStore.initMenu()
 
     const defaultSelectMenuIds = [menuStore.menu_tree[0].id]
-    const selectedMenuIds = ref<Array<string | number>>(defaultSelectMenuIds)
+    const selectedMenuIds = ref<Array<number>>(defaultSelectMenuIds)
+
+    const showModal = ref(false)
 
     // 菜单选中
     const selectMenu: OnUpdateSelectedKeys = (keys, _option, meta) => {
@@ -31,11 +37,11 @@ export default defineComponent({
       return
     }
 
-    const getMenuById = (id: string | number) => {
+    const getMenuById = (id: number) => {
       return menuStore.menu_list.find((v) => v.id == id)
     }
 
-    const getParentMenuById = (id: string | number) => {
+    const getParentMenuById = (id: number) => {
       if (getMenuById(id).parent_id) {
         return menuStore.menu_list.find((v) => v.id == getMenuById(id).parent_id)
       }
@@ -56,39 +62,12 @@ export default defineComponent({
     const model = ref({
       inputValue: null,
       textareaValue: null,
-      selectValue: null,
-      multipleSelectValue: null,
-      datetimeValue: null,
-      nestedValue: {
-        path1: null,
-        path2: null
-      },
-      switchValue: false,
-      checkboxGroupValue: null,
-      radioGroupValue: null,
-      radioButtonGroupValue: null,
-      inputNumberValue: null,
-      timePickerValue: null,
-      sliderValue: 0,
-      transferValue: null
+      selectValue: null
     })
     const generalOptions = ['groode', 'veli good', 'emazing', 'lidiculous'].map((v) => ({
       label: v,
       value: v
     }))
-
-    const cascaderOptions = [
-      {
-        label: 'groode',
-        value: 'groode',
-        children: [
-          {
-            label: 'veli good',
-            value: 'veli good'
-          }
-        ]
-      }
-    ]
 
     const rules = {
       inputValue: {
@@ -105,71 +84,6 @@ export default defineComponent({
         required: true,
         trigger: ['blur', 'change'],
         message: '请选择 selectValue'
-      },
-      multipleSelectValue: {
-        type: 'array',
-        required: true,
-        trigger: ['blur', 'change'],
-        message: '请选择 multipleSelectValue'
-      },
-      datetimeValue: {
-        type: 'number',
-        required: true,
-        trigger: ['blur', 'change'],
-        message: '请输入 datetimeValue'
-      },
-      nestedValue: {
-        path1: {
-          required: true,
-          trigger: ['blur', 'input'],
-          message: '请输入 nestedValue.path1'
-        },
-        path2: {
-          required: true,
-          trigger: ['blur', 'change'],
-          message: '请输入 nestedValue.path2'
-        }
-      },
-      checkboxGroupValue: {
-        type: 'array',
-        required: true,
-        trigger: 'change',
-        message: '请选择 checkboxGroupValue'
-      },
-      radioGroupValue: {
-        required: true,
-        trigger: 'change',
-        message: '请选择 radioGroupValue'
-      },
-      radioButtonGroupValue: {
-        required: true,
-        trigger: 'change',
-        message: '请选择 radioButtonGroupValue'
-      },
-      inputNumberValue: {
-        type: 'number',
-        required: true,
-        trigger: ['blur', 'change'],
-        message: '请输入 inputNumberValue'
-      },
-      timePickerValue: {
-        type: 'number',
-        required: true,
-        trigger: ['blur', 'change'],
-        message: '请输入 timePickerValue'
-      },
-      sliderValue: {
-        validator(rule: FormItemRule, value: number) {
-          return value > 50
-        },
-        trigger: ['blur', 'change'],
-        message: 'sliderValue 需要大于 50'
-      },
-      transferValue: {
-        type: 'array',
-        required: true,
-        trigger: 'change',
-        message: '请输入 transferValue'
       }
     }
     const handleValidateButtonClick = (e: MouseEvent) => {
@@ -179,6 +93,40 @@ export default defineComponent({
           console.log('验证成功')
         } else {
           console.log(errors)
+        }
+      })
+    }
+
+    // 弹窗
+    const modalFormRef = ref<FormInst | null>(null)
+    const modalModel = ref<Partial<MenuResource>>({
+      name: null,
+      parent_id: null
+    })
+
+    const modalFormRules = {
+      name: {
+        required: true,
+        trigger: ['blur', 'input'],
+        message: '请输入菜单名称'
+      }
+    }
+
+    const showModalForm = () => {
+      modalModel.value.name = null
+      modalModel.value.parent_id = selectedMenuIds.value[0]
+      showModal.value = true
+    }
+
+    const submitCallback = () => {
+      return modalFormRef.value?.validate(async (errors) => {
+        if (!errors) {
+          await addMenu(modalModel.value)
+          message.success('新建成功！')
+          showModal.value = false
+          menuStore.initMenu()
+        } else {
+          return false
         }
       })
     }
@@ -205,6 +153,7 @@ export default defineComponent({
                       type="info"
                       icon-placement="right"
                       disabled={!btnRights.value.addRootMenu}
+                      onClick={showModalForm}
                     >
                       添加顶级菜单
                     </n-button>
@@ -304,6 +253,11 @@ export default defineComponent({
                           />
                         </n-form-item-gi>
                       </n-grid>
+                      <div style="display: flex; justify-content: flex-end">
+                        <n-button round type="primary" onClick={handleValidateButtonClick}>
+                          验证
+                        </n-button>
+                      </div>
                     </n-form>
                   </n-scrollbar>
                 )
@@ -311,6 +265,41 @@ export default defineComponent({
             </n-card>
           </n-gi>
         </n-grid>
+
+        {/* 弹窗 */}
+        <n-modal
+          v-model:show={showModal.value}
+          preset="dialog"
+          title="新建菜单"
+          content={() => (
+            <n-form
+              ref={modalFormRef}
+              model={modalModel.value}
+              rules={modalFormRules}
+              size={size.value}
+              label-placement="left"
+            >
+              <n-grid cols={12} x-gap={12}>
+                <n-form-item-gi span={12} label="菜单名称" path="name">
+                  <n-input v-model:value={modalModel.value.name} />
+                </n-form-item-gi>
+              </n-grid>
+            </n-form>
+          )}
+        >
+          {{
+            action: () => (
+              <n-space>
+                <n-button size="small" onClick={() => (showModal.value = false)}>
+                  取消
+                </n-button>
+                <SelfLoadingButton size="small" type="info" onClick={submitCallback}>
+                  新增
+                </SelfLoadingButton>
+              </n-space>
+            )
+          }}
+        </n-modal>
       </div>
     )
   }

@@ -19,4 +19,13 @@
   .n-card-header {
     height: 60px;
   }
+
+  .n-dialog .n-dialog__title {
+    line-height: var(--n-title-font-size);
+  }
+
+  .n-dialog .n-dialog__content {
+    margin-top: 20px;
+    margin-bottom: 0px;
+  }
 }
