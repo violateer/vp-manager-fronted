@@ -4,7 +4,7 @@ import { useMenuStore } from '@/stores'
 import { OnUpdateSelectedKeys } from 'naive-ui/es/tree/src/Tree'
 import { TreeOption, FormInst, useMessage } from 'naive-ui'
 import { SelfLoadingButton } from '@/components/Button/CustomButton'
-import { addMenu } from '@/api/menus'
+import { addMenu, deleteMenuById } from '@/api/menus'
 
 export default defineComponent({
   displayName: 'MenuPage',
@@ -97,6 +97,13 @@ export default defineComponent({
       })
     }
 
+    const deleteMenu = async () => {
+      await deleteMenuById(selectedMenuIds.value[0])
+      message.success('删除成功！')
+      showModal.value = false
+      menuStore.initMenu()
+    }
+
     // 弹窗
     const modalFormRef = ref<FormInst | null>(null)
     const modalModel = ref<Partial<MenuResource>>({
@@ -170,6 +177,7 @@ export default defineComponent({
                       type="error"
                       icon-placement="right"
                       disabled={!btnRights.value.deleteMenu}
+                      onClick={deleteMenu}
                     >
                       删除菜单
                     </n-button>

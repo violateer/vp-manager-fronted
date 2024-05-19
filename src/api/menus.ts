@@ -10,4 +10,14 @@ const addMenu = async (data: Partial<MenuResource>) => {
   return res.data.resource
 }
 
-export { addMenu }
+/**
+ * @description: 删除菜单
+ * @param {number} id
+ * @return {*}
+ */
+const deleteMenuById = async (id: number) => {
+  const res = await http.delete<Resource>(`/menus/${id}`)
+  return res.data.resource
+}
+
+export { addMenu, deleteMenuById }

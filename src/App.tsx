@@ -2,24 +2,25 @@ import { Suspense, computed, defineComponent } from 'vue'
 import { RouterView } from 'vue-router'
 import { zhCN, dateZhCN } from 'naive-ui'
 import { lighten } from './utils'
+import { useDesignSettingStore } from './stores/designSetting'
 
 export default defineComponent({
   setup() {
     /**
      * @type import('naive-ui').GlobalThemeOverrides
      */
+    const designStore = useDesignSettingStore()
     const getThemeOverrides = computed(() => {
-      const appTheme = '#2d8cf0'
-      const lightenStr = lighten('#2d8cf0', 6)
+      const lightenStr = lighten(designStore.appTheme, 6)
       return {
         common: {
-          primaryColor: appTheme,
+          primaryColor: designStore.appTheme,
           primaryColorHover: lightenStr,
           primaryColorPressed: lightenStr,
-          primaryColorSuppl: appTheme
+          primaryColorSuppl: designStore.appTheme
         },
         LoadingBar: {
-          colorLoading: appTheme
+          colorLoading: designStore.appTheme
         }
       }
     })

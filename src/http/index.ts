@@ -8,17 +8,6 @@ type PostConfig = Omit<AxiosRequestConfig, 'url' | 'data' | 'method'>
 type PatchConfig = Omit<AxiosRequestConfig, 'url' | 'data'>
 type DeleteConfig = Omit<AxiosRequestConfig, 'params'>
 
-const themeRef = ref<'light' | 'dark'>('light')
-const configProviderPropsRef = computed<ConfigProviderProps>(() => ({
-  theme: themeRef.value === 'light' ? lightTheme : darkTheme
-}))
-const { message, notification, dialog, loadingBar } = createDiscreteApi(
-  ['message', 'dialog', 'notification', 'loadingBar'],
-  {
-    configProviderProps: configProviderPropsRef
-  }
-)
-
 export class Http {
   instance: AxiosInstance
   constructor(baseURL: string) {
@@ -53,7 +42,7 @@ export class Http {
 export const http = new Http('/api/v1')
 
 http.instance.interceptors.request.use((config) => {
-  loadingBar.start()
+  window['$loading'].start()
   const token = localStorage.getItem('token')
   if (token) {
     config.headers!.Authorization = `Bearer ${token}`
@@ -63,17 +52,23 @@ http.instance.interceptors.request.use((config) => {
 
 http.instance.interceptors.response.use(
   (response) => {
-    loadingBar.finish()
+    window['$loading'].finish()
     return response
   },
   (error) => {
-    loadingBar.finish()
-    if (error.response.data.message) {
-      message.error(error.response.data.message)
-    }
+    window['$loading'].finish()
 
     if (error.response.status >= 400 && error.response.status < 500) {
-      router.push('/auth')
+      if (error.response.status === 401) {
+        router.push('/auth')
+        return
+      }
+
+      if (error.response.data.message) {
+        window['$message'].error(error.response.data.message)
+      } else {
+        window['$message'].error(JSON.stringify(error.response.data.errors))
+      }
     }
 
     throw error
