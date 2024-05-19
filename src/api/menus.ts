@@ -21,6 +21,17 @@ const addMenu = async (data: Partial<MenuResource>) => {
 }
 
 /**
+ * @description: 更新菜单
+ * @param {number} id
+ * @param {Partial<MenuResource>} data
+ * @return {*}
+ */
+const updateMenu = async (id: number, data: Partial<MenuResource>) => {
+  const res = await http.put<Resource>(`/menus/${id}`, data)
+  return res.data.resource
+}
+
+/**
  * @description: 删除菜单
  * @param {number} id
  * @return {*}
@@ -30,4 +41,4 @@ const deleteMenuById = async (id: number) => {
   return res.data.resource
 }
 
-export { getMenuById, addMenu, deleteMenuById }
+export { getMenuById, addMenu,updateMenu, deleteMenuById }

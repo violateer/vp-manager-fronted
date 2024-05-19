@@ -2,9 +2,17 @@ import { defineComponent, ref } from 'vue'
 import s from './MenuPage.module.scss'
 import { useMenuStore } from '@/stores'
 import { OnUpdateSelectedKeys } from 'naive-ui/es/tree/src/Tree'
-import { TreeOption, FormInst, useMessage, useModal, NButton, FormRules } from 'naive-ui'
+import {
+  TreeOption,
+  FormInst,
+  useMessage,
+  useModal,
+  NButton,
+  FormRules,
+  FormItemRule
+} from 'naive-ui'
 import { SelfLoadingButton } from '@/components/Button/CustomButton'
-import { addMenu, deleteMenuById } from '@/api/menus'
+import { addMenu, deleteMenuById, updateMenu } from '@/api/menus'
 import router from '@/router'
 import { IconSelect } from '@/components/Icon/IconSelect'
 
@@ -49,6 +57,24 @@ export default defineComponent({
         required: true,
         trigger: ['blur', 'input'],
         message: '请输入菜单名称'
+      },
+      route_type: {
+        validator(_rule: FormItemRule, value: string) {
+          if (model.value.route && !value) {
+            return new Error('请选择路由类型')
+          }
+          return true
+        },
+        trigger: ['input', 'blur']
+      },
+      component: {
+        validator(_rule: FormItemRule, value: string) {
+          if (model.value.route && !value) {
+            return new Error('请填写路由关联')
+          }
+          return true
+        },
+        trigger: ['input', 'blur']
       }
     }
 
@@ -104,11 +130,13 @@ export default defineComponent({
       btnRights.value.addChildMenu = node.level === 0
     }
 
-    const handleValidateButtonClick = (e: MouseEvent) => {
+    const submitForm = (e: MouseEvent) => {
       e.preventDefault()
-      formRef.value?.validate((errors) => {
+      formRef.value?.validate(async (errors) => {
         if (!errors) {
-          console.log('验证成功')
+          await updateMenu(selectedMenuIds.value[0], model.value)
+          message.success('保存成功！')
+          router.go(0)
         } else {
           console.log(errors)
         }
@@ -286,21 +314,31 @@ export default defineComponent({
                         <n-form-item-gi span={24} label="路由" path="route">
                           <n-input v-model:value={model.value.route} />
                         </n-form-item-gi>
-                        <n-form-item-gi span={24} label="路由类型" path="route_type">
+                        <n-form-item-gi
+                          span={24}
+                          label="路由类型"
+                          path="route_type"
+                          show-require-mark={!!model.value.route}
+                        >
                           <n-select
                             v-model:value={model.value.route_type}
                             options={routeTypeOptions}
                             clearable
                           />
                         </n-form-item-gi>
-                        <n-form-item-gi span={24} label="组件关联" path="component">
+                        <n-form-item-gi
+                          span={24}
+                          label="路由关联"
+                          path="component"
+                          show-require-mark={!!model.value.route}
+                        >
                           <n-input v-model:value={model.value.component} />
                         </n-form-item-gi>
                       </n-grid>
                       <div style="display: flex; justify-content: flex-end">
-                        <n-button round type="primary" onClick={handleValidateButtonClick}>
-                          验证
-                        </n-button>
+                        <SelfLoadingButton round type="primary" onClick={submitForm}>
+                          保存
+                        </SelfLoadingButton>
                       </div>
                     </n-form>
                   </n-scrollbar>

@@ -29,6 +29,9 @@ export class Http {
   patch<R = unknown>(url: string, data?: Record<string, JSONValue>, config?: PatchConfig) {
     return this.instance.request<R>({ ...config, url, data, method: 'patch' })
   }
+  put<R = unknown>(url: string, data?: Record<string, JSONValue>, config?: PatchConfig) {
+    return this.instance.request<R>({ ...config, url, data, method: 'patch' })
+  }
   delete<R = unknown>(url: string, query?: Record<string, string>, config?: DeleteConfig) {
     return this.instance.request<R>({
       ...config,
