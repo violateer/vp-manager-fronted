@@ -68,19 +68,9 @@ export const ProjectSelection = defineComponent({
       }
     ]
 
-    const handleSelect = (key: string | number) => {
-      console.log(String(key))
-    }
-
     return () => (
       <div class={s.wrapper}>
-        <n-dropdown
-          trigger="click"
-          placement="bottom-start"
-          showArrow={true}
-          options={options}
-          onSelect={handleSelect}
-        >
+        <n-dropdown trigger="click" placement="bottom-start" showArrow={true} options={options}>
           <div class={s.project_box}>
             <div class={s.project_box_bar}>当前项目：{userStore.session.active_project_name}</div>
           </div>
