@@ -1,25 +1,21 @@
-import { Component, defineComponent, h, ref } from 'vue'
+import { defineComponent, h, ref } from 'vue'
 import s from './Menu.module.scss'
-import { NIcon } from 'naive-ui'
 import { useMenuStore } from '@/stores'
-import * as icons from '@vicons/ionicons5'
 import { RouterLink } from 'vue-router'
+import router from '@/router'
+import { renderIcon } from '../Icon/icons'
 
 export const Menu = defineComponent({
   async setup(props, context) {
     const menuStore = useMenuStore()
     const menuOptions = ref<MenuResources>([])
 
-    // await menuStore.initMenu()
-
-    function renderIcon(icon: Component) {
-      return () => h(NIcon, null, { default: () => h(icon) })
-    }
+    const currMenu = menuStore.menu_list.find((v) => v.route === router.currentRoute.value.name)
 
     const setMenuIcon = (menus) => {
       return menus.map((menu) => {
         if (menu.icon) {
-          menu.icon = renderIcon(icons[menu.icon])
+          menu.icon = renderIcon(menu.icon)
         }
 
         if (menu.route) {
@@ -56,6 +52,7 @@ export const Menu = defineComponent({
           options={menuOptions.value}
           accordion
           inverted={'inverted'}
+          value={currMenu?.id}
         />
       </div>
     )

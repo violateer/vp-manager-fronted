@@ -2,10 +2,11 @@ import { defineComponent, ref } from 'vue'
 import s from './MenuPage.module.scss'
 import { useMenuStore } from '@/stores'
 import { OnUpdateSelectedKeys } from 'naive-ui/es/tree/src/Tree'
-import { TreeOption, FormInst, useMessage, useModal, NButton } from 'naive-ui'
+import { TreeOption, FormInst, useMessage, useModal, NButton, FormRules } from 'naive-ui'
 import { SelfLoadingButton } from '@/components/Button/CustomButton'
 import { addMenu, deleteMenuById } from '@/api/menus'
 import router from '@/router'
+import { IconSelect } from '@/components/Icon/IconSelect'
 
 export default defineComponent({
   displayName: 'MenuPage',
@@ -27,16 +28,63 @@ export default defineComponent({
 
     const showModal = ref(false)
 
+    // 表单
+    const formRef = ref<FormInst | null>(null)
+    const size = ref('medium')
+    const model = ref({
+      name: null,
+      icon: null,
+      component: null,
+      route: null,
+      route_type: null
+    })
+
+    const routeTypeOptions = ['组件'].map((v) => ({
+      label: v,
+      value: v
+    }))
+
+    const rules: FormRules = {
+      name: {
+        required: true,
+        trigger: ['blur', 'input'],
+        message: '请输入菜单名称'
+      }
+    }
+
+    // 弹窗
+    const modalFormRef = ref<FormInst | null>(null)
+    const modalModel = ref<Partial<MenuResource>>({
+      name: null,
+      parent_id: null
+    })
+
+    const modalFormRules: FormRules = {
+      name: {
+        required: true,
+        trigger: ['blur', 'input'],
+        message: '请输入菜单名称'
+      }
+    }
+
     // 菜单选中
     const selectMenu: OnUpdateSelectedKeys = (keys, _option, meta) => {
-      console.log(123)
-
       if (meta.action === 'select') {
         selectedMenuIds.value = keys
-
+        updateMenuInfo()
         setBtnRights(meta.node)
       }
       return
+    }
+
+    // 更新右边数据
+    const updateMenuInfo = () => {
+      const currMenu = menuStore.menu_list.find((v) => v.id === selectedMenuIds.value[0])
+      model.value.name = currMenu?.name
+      model.value.icon = currMenu?.icon
+      model.value.component = currMenu?.component
+      model.value.route = currMenu?.route
+      model.value.route_type = currMenu?.route_type
     }
 
     const getMenuById = (id: number) => {
@@ -56,38 +104,6 @@ export default defineComponent({
       btnRights.value.addChildMenu = node.level === 0
     }
 
-    setBtnRights(menuStore.menu_tree[0])
-
-    // 表单
-    const formRef = ref<FormInst | null>(null)
-    const size = ref('medium')
-    const model = ref({
-      inputValue: null,
-      textareaValue: null,
-      selectValue: null
-    })
-    const generalOptions = ['groode', 'veli good', 'emazing', 'lidiculous'].map((v) => ({
-      label: v,
-      value: v
-    }))
-
-    const rules = {
-      inputValue: {
-        required: true,
-        trigger: ['blur', 'input'],
-        message: '请输入 inputValue'
-      },
-      textareaValue: {
-        required: true,
-        trigger: ['blur', 'input'],
-        message: '请输入 textareaValue'
-      },
-      selectValue: {
-        required: true,
-        trigger: ['blur', 'change'],
-        message: '请选择 selectValue'
-      }
-    }
     const handleValidateButtonClick = (e: MouseEvent) => {
       e.preventDefault()
       formRef.value?.validate((errors) => {
@@ -125,21 +141,6 @@ export default defineComponent({
       })
     }
 
-    // 弹窗
-    const modalFormRef = ref<FormInst | null>(null)
-    const modalModel = ref<Partial<MenuResource>>({
-      name: null,
-      parent_id: null
-    })
-
-    const modalFormRules = {
-      name: {
-        required: true,
-        trigger: ['blur', 'input'],
-        message: '请输入菜单名称'
-      }
-    }
-
     const showModalForm = (isRoot: boolean) => {
       modalModel.value.name = null
       modalModel.value.parent_id = isRoot ? null : selectedMenuIds.value[0]
@@ -159,6 +160,9 @@ export default defineComponent({
         }
       })
     }
+
+    setBtnRights(menuStore.menu_tree[0])
+    updateMenuInfo()
 
     return () => (
       <div class={s.wrapper}>
@@ -262,26 +266,35 @@ export default defineComponent({
                       label-placement="top"
                     >
                       <n-grid cols={24} x-gap={24}>
-                        <n-form-item-gi span={24} label="Input" path="inputValue">
-                          <n-input v-model:value={model.value.inputValue} placeholder="Input" />
+                        <n-form-item-gi span={24} label="菜单名称" path="name">
+                          <n-input v-model:value={model.value.name} />
                         </n-form-item-gi>
-                        <n-form-item-gi span={24} label="Textarea" path="textareaValue">
-                          <n-input
-                            v-model:value={model.value.textareaValue}
-                            placeholder="Textarea"
-                            type="textarea"
-                            autosize={{
-                              minRows: 3,
-                              maxRows: 5
-                            }}
-                          />
+                        <n-form-item-gi span={24} label="菜单图标" path="icon">
+                          {/* <n-input v-model:value={model.value.icon} /> */}
+                          <IconSelect v-model:value={model.value.icon} />
+                          {/* <n-input-group>
+                            <n-input
+                              readonly={true}
+                              placeholder="请选择"
+                              v-model:value={model.value.icon}
+                            />
+                            <n-button type="primary" ghost>
+                              搜索
+                            </n-button>
+                          </n-input-group> */}
                         </n-form-item-gi>
-                        <n-form-item-gi span={24} label="Select" path="selectValue">
+                        <n-form-item-gi span={24} label="路由" path="route">
+                          <n-input v-model:value={model.value.route} />
+                        </n-form-item-gi>
+                        <n-form-item-gi span={24} label="路由类型" path="route_type">
                           <n-select
-                            v-model:value={model.value.selectValue}
-                            placeholder="Select"
-                            options={generalOptions}
+                            v-model:value={model.value.route_type}
+                            options={routeTypeOptions}
+                            clearable
                           />
+                        </n-form-item-gi>
+                        <n-form-item-gi span={24} label="组件关联" path="component">
+                          <n-input v-model:value={model.value.component} />
                         </n-form-item-gi>
                       </n-grid>
                       <div style="display: flex; justify-content: flex-end">

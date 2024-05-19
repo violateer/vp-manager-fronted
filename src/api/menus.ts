@@ -1,6 +1,16 @@
 import { http } from '@/http'
 
 /**
+ * @description: 查询菜单
+ * @param {number} id
+ * @return {*}
+ */
+const getMenuById = async (id: number) => {
+  const res = await http.get<Resource>(`/menus/${id}`)
+  return res.data.resource
+}
+
+/**
  * @description: 新增菜单
  * @param {Partial<MenuResource>} data
  * @return {*}
@@ -20,4 +30,4 @@ const deleteMenuById = async (id: number) => {
   return res.data.resource
 }
 
-export { addMenu, deleteMenuById }
+export { getMenuById, addMenu, deleteMenuById }
