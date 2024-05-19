@@ -2,9 +2,10 @@ import { defineComponent, ref } from 'vue'
 import s from './MenuPage.module.scss'
 import { useMenuStore } from '@/stores'
 import { OnUpdateSelectedKeys } from 'naive-ui/es/tree/src/Tree'
-import { TreeOption, FormInst, useMessage } from 'naive-ui'
+import { TreeOption, FormInst, useMessage, useModal, NButton } from 'naive-ui'
 import { SelfLoadingButton } from '@/components/Button/CustomButton'
 import { addMenu, deleteMenuById } from '@/api/menus'
+import router from '@/router'
 
 export default defineComponent({
   displayName: 'MenuPage',
@@ -16,6 +17,7 @@ export default defineComponent({
     })
 
     const message = useMessage()
+    const modal = window['$modal']
 
     const menuStore = useMenuStore()
     await menuStore.initMenu()
@@ -98,10 +100,29 @@ export default defineComponent({
     }
 
     const deleteMenu = async () => {
-      await deleteMenuById(selectedMenuIds.value[0])
-      message.success('删除成功！')
-      showModal.value = false
-      menuStore.initMenu()
+      modal.create({
+        title: '确定删除菜单吗？',
+        preset: 'dialog',
+        action: () => (
+          <>
+            <NButton size="small" onClick={() => modal.destroyAll()}>
+              取消
+            </NButton>
+            <SelfLoadingButton
+              size="small"
+              type="error"
+              onClick={async () => {
+                await deleteMenuById(selectedMenuIds.value[0])
+                message.success('删除成功！')
+                showModal.value = false
+                router.go(0)
+              }}
+            >
+              确定
+            </SelfLoadingButton>
+          </>
+        )
+      })
     }
 
     // 弹窗
@@ -119,10 +140,11 @@ export default defineComponent({
       }
     }
 
-    const showModalForm = () => {
+    const showModalForm = (isRoot: boolean) => {
       modalModel.value.name = null
-      modalModel.value.parent_id = selectedMenuIds.value[0]
+      modalModel.value.parent_id = isRoot ? null : selectedMenuIds.value[0]
       showModal.value = true
+      console.log('parent', selectedMenuIds.value[0])
     }
 
     const submitCallback = () => {
@@ -131,7 +153,7 @@ export default defineComponent({
           await addMenu(modalModel.value)
           message.success('新建成功！')
           showModal.value = false
-          menuStore.initMenu()
+          router.go(0)
         } else {
           return false
         }
@@ -160,7 +182,7 @@ export default defineComponent({
                       type="info"
                       icon-placement="right"
                       disabled={!btnRights.value.addRootMenu}
-                      onClick={showModalForm}
+                      onClick={() => showModalForm(true)}
                     >
                       添加顶级菜单
                     </n-button>
@@ -169,6 +191,7 @@ export default defineComponent({
                       type="info"
                       icon-placement="right"
                       disabled={!btnRights.value.addChildMenu}
+                      onClick={() => showModalForm(false)}
                     >
                       添加子菜单
                     </n-button>

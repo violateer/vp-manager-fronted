@@ -25,8 +25,8 @@ export function setupNaiveDiscreteApi() {
       }
     }
   }))
-  const { message, dialog, notification, loadingBar } = NaiveUI.createDiscreteApi(
-    ['message', 'dialog', 'notification', 'loadingBar'],
+  const { message, dialog, notification, loadingBar, modal } = NaiveUI.createDiscreteApi(
+    ['message', 'dialog', 'notification', 'loadingBar', 'modal'],
     {
       configProviderProps: configProviderPropsRef
     }
@@ -36,4 +36,5 @@ export function setupNaiveDiscreteApi() {
   window['$dialog'] = dialog
   window['$notification'] = notification
   window['$loading'] = loadingBar
+  window['$modal'] = modal
 }

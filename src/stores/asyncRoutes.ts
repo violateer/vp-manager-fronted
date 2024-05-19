@@ -2,6 +2,7 @@ import { http } from '@/http'
 import { defineStore } from 'pinia'
 import { toRaw } from 'vue'
 import { RouteRecordRaw, Router } from 'vue-router'
+import { useMenuStore } from '.'
 
 export interface IAsyncRouteState {
   routersAdded: any[]
@@ -39,15 +40,17 @@ export const useAsyncRouteStore = defineStore('asyncRoute', {
       this.keepAliveComponents = compNames
     },
     async generateRouter(router: Router) {
-      const {
-        data: { resource: list }
-      } = await http.get<{ resource: MenuResources }>('/menus/list')
+      // const {
+      //   data: { resource: list }
+      // } = await http.get<{ resource: MenuResources }>('/menus/list')
+      const menuStore = useMenuStore()
+      await menuStore.initMenu()
 
       const modules = await import.meta.glob('../pages/**.tsx', { eager: true })
 
       const homeRoute = router.getRoutes().find((v) => v.name === 'home')
 
-      list
+      menuStore.menu_list
         .filter((v) => v.route_type)
         .forEach((v) => {
           const route = {

@@ -10,7 +10,7 @@ export const Menu = defineComponent({
     const menuStore = useMenuStore()
     const menuOptions = ref<MenuResources>([])
 
-    await menuStore.initMenu()
+    // await menuStore.initMenu()
 
     function renderIcon(icon: Component) {
       return () => h(NIcon, null, { default: () => h(icon) })

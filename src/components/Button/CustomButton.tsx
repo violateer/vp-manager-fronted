@@ -1,5 +1,5 @@
 import { omit } from 'naive-ui/es/_utils'
-import { ButtonProps, buttonProps } from 'naive-ui/es/button'
+import { ButtonProps, NButton, buttonProps } from 'naive-ui/es/button'
 import { defineComponent, ref } from 'vue'
 
 type exceptOption<T> = (keyof T)[]
@@ -33,7 +33,7 @@ export const SelfLoadingButton = defineComponent({
     }
 
     return () => (
-      <n-button
+      <NButton
         // 去除props.onClick属性，避免onClick触发两次
         {...omit(props, exceptOptions)}
         loading={loading.value}
@@ -41,7 +41,7 @@ export const SelfLoadingButton = defineComponent({
         onClick={loadingClick}
       >
         {slots.default?.()}
-      </n-button>
+      </NButton>
     )
   }
 })
