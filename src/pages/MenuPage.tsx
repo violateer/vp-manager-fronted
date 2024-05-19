@@ -1,20 +1,13 @@
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
 import s from './MenuPage.module.scss'
 import { useMenuStore } from '@/stores'
 import { OnUpdateSelectedKeys } from 'naive-ui/es/tree/src/Tree'
-import {
-  TreeOption,
-  FormInst,
-  useMessage,
-  useModal,
-  NButton,
-  FormRules,
-  FormItemRule
-} from 'naive-ui'
+import { TreeOption, FormInst, useMessage, NButton, FormRules, FormItemRule } from 'naive-ui'
 import { SelfLoadingButton } from '@/components/Button/CustomButton'
 import { addMenu, deleteMenuById, updateMenu } from '@/api/menus'
 import router from '@/router'
 import { IconSelect } from '@/components/Icon/IconSelect'
+import { http } from '@/http'
 
 export default defineComponent({
   displayName: 'MenuPage',
@@ -33,6 +26,15 @@ export default defineComponent({
 
     const defaultSelectMenuIds = [menuStore.menu_tree[0].id]
     const selectedMenuIds = ref<Array<number>>(defaultSelectMenuIds)
+
+    const currMenu = ref<MenuResource>(
+      menuStore.menu_list.find((v) => v.id === selectedMenuIds.value[0])
+    )
+
+    watch(selectedMenuIds, (newVal) => {
+      currMenu.value = menuStore.menu_list.find((v) => v.id === newVal[0]) || null
+      updateMenuInfo()
+    })
 
     const showModal = ref(false)
 
@@ -105,12 +107,11 @@ export default defineComponent({
 
     // 更新右边数据
     const updateMenuInfo = () => {
-      const currMenu = menuStore.menu_list.find((v) => v.id === selectedMenuIds.value[0])
-      model.value.name = currMenu?.name
-      model.value.icon = currMenu?.icon
-      model.value.component = currMenu?.component
-      model.value.route = currMenu?.route
-      model.value.route_type = currMenu?.route_type
+      model.value.name = currMenu.value?.name
+      model.value.icon = currMenu.value?.icon
+      model.value.component = currMenu.value?.component
+      model.value.route = currMenu.value?.route
+      model.value.route_type = currMenu.value?.route_type
     }
 
     const getMenuById = (id: number) => {
@@ -292,6 +293,7 @@ export default defineComponent({
                       rules={rules}
                       size={size.value}
                       label-placement="top"
+                      disabled={currMenu.value?.is_system === 1}
                     >
                       <n-grid cols={24} x-gap={24}>
                         <n-form-item-gi span={24} label="菜单名称" path="name">
@@ -335,11 +337,15 @@ export default defineComponent({
                           <n-input v-model:value={model.value.component} />
                         </n-form-item-gi>
                       </n-grid>
-                      <div style="display: flex; justify-content: flex-end">
-                        <SelfLoadingButton round type="primary" onClick={submitForm}>
-                          保存
-                        </SelfLoadingButton>
-                      </div>
+                      {currMenu.value?.is_system === 1 ? (
+                        ''
+                      ) : (
+                        <div style="display: flex; justify-content: flex-end">
+                          <SelfLoadingButton round type="primary" onClick={submitForm}>
+                            保存
+                          </SelfLoadingButton>
+                        </div>
+                      )}
                     </n-form>
                   </n-scrollbar>
                 )
