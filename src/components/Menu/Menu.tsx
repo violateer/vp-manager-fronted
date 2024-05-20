@@ -1,4 +1,4 @@
-import { defineComponent, h, ref } from 'vue'
+import { defineComponent, h, ref, watch } from 'vue'
 import s from './Menu.module.scss'
 import { useMenuStore } from '@/stores'
 import { RouterLink } from 'vue-router'
@@ -10,7 +10,16 @@ export const Menu = defineComponent({
     const menuStore = useMenuStore()
     const menuOptions = ref<MenuResources>([])
 
-    const currMenu = menuStore.menu_list.find((v) => v.route === router.currentRoute.value.name)
+    await menuStore.initMenu()
+
+    const currMenu = ref(
+      menuStore.menu_list.find((v) => v.route === router.currentRoute.value.name)
+    )
+
+    watch(router.currentRoute, (currRoute) => {
+      currMenu.value = menuStore.menu_list.find((v) => v.route === currRoute.name)
+      console.log(router.getRoutes())
+    })
 
     const setMenuIcon = (menus) => {
       return menus.map((menu) => {
@@ -52,7 +61,7 @@ export const Menu = defineComponent({
           options={menuOptions.value}
           accordion
           inverted={'inverted'}
-          value={currMenu?.id}
+          value={currMenu.value?.id}
         />
       </div>
     )
